@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#13100e">
+<title>Essencebound — Lanterns of Calderhal</title>
+<style>
+html,body{margin:0;min-height:100%;background:#100e0e;color:#edddbe;font-family:Georgia,serif}
+main{min-height:100vh;display:grid;place-content:center;text-align:center;gap:16px;padding:20px;box-sizing:border-box}
+h1{font-size:clamp(2rem,6vw,4rem);color:#ebc781;letter-spacing:.08em;font-weight:normal;margin:0}
+p{margin:0;color:#b7a997}progress{width:min(340px,85vw);height:12px;accent-color:#d3a55c;margin:auto}
+button{background:#322820;color:#edddbe;border:1px solid #b48e57;padding:12px 18px;border-radius:8px;cursor:pointer}
+</style>
+</head>
+<body>
+<main id="loading" role="status" aria-live="polite">
+<h1>ESSENCEBOUND</h1>
+<p id="status">Lighting the lanterns of Calderhal…</p>
+<progress id="progress" max="17" value="0"></progress>
+<noscript>JavaScript is required to play Essencebound.</noscript>
+</main>
+<script>
+(async function(){
+ const total=17, urls=Array.from({length:total},(_,i)=>'game/part-'+String(i).padStart(2,'0')+'.txt');
+ const parts=new Array(total);let done=0;
+ try {
+  await Promise.all(urls.map(async(url,i)=>{
+   const response=await fetch(url);
+   if(!response.ok) throw new Error('Could not load '+url+' (HTTP '+response.status+')');
+   parts[i]=await response.text();
+   done++;
+   document.getElementById('progress').value=done;
+   document.getElementById('status').textContent='Awakening the world… '+Math.round(done/total*100)+'%';
+  }));
+  const html=parts.join('');
+  if(!html.startsWith('<!DOCTYPE html>')||!html.trimEnd().endsWith('</body></html>'))throw new Error('Incomplete game content');
+  document.open();document.write(html);document.close();
+ } catch(error) {
+  const host=document.getElementById('loading');
+  host.innerHTML='';
+  const title=document.createElement('h1');title.textContent='ESSENCEBOUND';
+  const msg=document.createElement('p');msg.textContent='The game could not be loaded: '+(error.message||String(error));
+  const retry=document.createElement('button');retry.textContent='Retry';retry.onclick=()=>location.reload();
+  host.append(title,msg,retry);
+ }
+})();
+</script>
+</body>
+</html>

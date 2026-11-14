@@ -1,28 +1,28 @@
-# Essencebound
+# Essencebound — Lanterns of Calderhal
 
-A dark-fantasy RPG playable in your browser. The current edition is **Lanterns of Calderhal**, built on the Legacy & Horizons expansion.
+Playable dark-fantasy browser RPG, based on the **Legacy & Horizons** expansion and the redesigned title screen.
 
-## Play online
+**Play:** https://m0998001.github.io/Essencebound/
 
-Once GitHub Pages is enabled for the `main` branch at the repository root, the game will be available at:
+## Deployment
+The repository's **index.html** loads the complete game from 17 sequentially numbered files in **game/**. The browser downloads them in parallel, reconstructs the original HTML, and launches it at the same URL.
 
-https://m0998001.github.io/Essencebound/
+This layout works on GitHub Pages and avoids submitting one 11.6 MB file via constrained publishing integrations. The game parts must be uploaded together; do not reorder or edit them independently. A single-file offline release can still be distributed separately.
 
-## Hosting
+A Pages deployment workflow is included in `.github/workflows/pages.yml`. If GitHub requires an initial setup step, open **Settings → Pages** and select **GitHub Actions** as the source.
 
-- `index.html` — the complete playable game, including its current title-screen artwork and game data.
-- `assets/npcs/` — character portraits for a future visual expansion.
-- `assets/enemies/` — enemy artwork.
-- `assets/bosses/` — boss illustrations.
-- `assets/scenes/` — story backgrounds.
-- `assets/ui/` — reusable interface art.
+## Artwork directories
+Future game art should live in these locations and be referenced by relative paths:
+- `assets/npcs/`
+- `assets/enemies/`
+- `assets/bosses/`
+- `assets/scenes/`
+- `assets/ui/`
 
-Image references should be relative to this repository root, for example `assets/npcs/maud.webp`, so they work both on GitHub Pages and local servers.
+They currently contain placeholders, not portraits or illustrations. For example, `assets/npcs/maud.webp`.
 
-## Important save note
+## Existing saves
+Browser saves are origin-specific. Local saves from `file://` or other hosts will not automatically appear on GitHub Pages. **Export a save code from the earlier game and import it into this edition.**
 
-The game uses local browser storage. A save made on another domain or opened directly as a file does not automatically appear on the GitHub Pages website. Export your save code in the previous version, then import it into the hosted edition.
-
-## Setup
-
-In **Settings → Pages**, select **Deploy from a branch**, branch `main`, folder `/(root)`, and save. GitHub Pages deploys the repository root as a static site. No bundler is required.
+## Offline play
+For fully offline play, use the original `Essencebound_Lanterns_of_Calderhal.html` standalone file or serve this repository with a local HTTP server. The Pages loader uses `fetch`, which may not work when opened directly as `file://`.
