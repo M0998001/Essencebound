@@ -483,6 +483,12 @@ html.eb-reduced *,html.eb-reduced *::before,html.eb-reduced *::after{animation-d
 html.eb-reduced .ebt-light,html.eb-reduced .ebt-stars {animation:none!important;}
 html.eb-large .eb-title-description {font-size:15px;} html.eb-large .eb-title-action {font-size:16px;}
 
+
+/* ESSENCEBOUND ART PILOT — external WebP assets; harmless if an image is absent */
+.art-portrait{display:block;align-self:center;width:min(42vw,200px);height:min(25vh,225px);object-fit:cover;object-position:center 17%;border:1px solid #8a6a43;border-radius:12px;margin:0 auto 10px;box-shadow:0 10px 28px rgba(0,0,0,.5)}
+.unit .enemy-art{float:left;display:block;width:32px;height:32px;object-fit:cover;border-radius:5px;border:1px solid #7a674f;margin:0 6px 3px 0}
+.unit.boss .enemy-art{width:50px;height:42px}
+@media(max-height:650px){.art-portrait{height:min(17vh,118px)}}
 </style>
 </head><body>
 <div id="app"><div style="padding:40vh 0;text-align:center;color:#a39886;font-family:Georgia,serif">Lighting the lanterns&hellip;</div></div>
