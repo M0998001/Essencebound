@@ -2330,7 +2330,12 @@ at crunch like snow and hold the footprints of things that walked here last year
     } else {
       opts.append(UI.btn(node.n ? 'Continue' : 'Done', () => { if (out.scene) { UI.lastNodeApplied = null; return UI.playScene(out.scene, null, UI.sceneDone); } if (out.goto) return UI.endScene(out.goto); next(node.n || 'end'); }, 'primary'));
     }
-    root.append(h('div.scene-wrap', h('div.scene-loc', W.NPCS[node.s] && !W.NPCS[node.s].narrator && !W.NPCS[node.s].system ? '' : ''), card, opts));
+    const sceneBox = h('div.scene-wrap', h('div.scene-loc', W.NPCS[node.s] && !W.NPCS[node.s].narrator && !W.NPCS[node.s].system ? '' : ''), card, opts);
+    if (['maud','caspian','gannet','anselm','seraphine','ottoline'].includes(node.s)) {
+      const portrait = h('img.art-portrait', { src: 'assets/npcs/' + node.s + '.webp', alt: spk.name, loading: 'lazy', decoding: 'async', onerror: e => e.currentTarget.remove() });
+      sceneBox.insertBefore(portrait, card);
+    }
+    root.append(sceneBox);
   };
 
   // ---------- town ----------
@@ -3233,6 +3238,10 @@ at crunch like snow and hold the footprints of things that walked here last year
     const maxHp = K.maxHp(u); const sh = K.shieldTotal(u);
     const card = h('div.unit.' + u.side + (cur ? '.cur' : '') + (valid ? '.valid' : '') + (u.kind === 'decoy' ? '.decoy' : '') + (u.boss ? '.boss' : '') + (u.kind === 'familiar' || u.kind === 'conjuration' ? '.summon' : ''),
       { 'data-uid': u.id, onclick: () => UI.tapUnit(u) });
+        if (u.side === 'enemy' && u.fid && ['wolf','shardling','ghoul','cinderknight','spawn','acolyte','matriarch','prior'].includes(u.fid)) {
+      const group = (u.fid === 'matriarch' || u.fid === 'prior') ? 'bosses' : 'enemies';
+      card.append(h('img.enemy-art', { src: 'assets/' + group + '/' + u.fid + '.webp', alt: '', loading: 'lazy', decoding: 'async', onerror: e => e.currentTarget.remove() }));
+    }
     const nameRow = h('div.u-name', u.name);
     card.append(nameRow);
     if (u.side === 'enemy' && u.intent && b.intentsVisible !== false) {
