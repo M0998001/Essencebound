@@ -93,15 +93,16 @@ at crunch like snow and hold the footprints of things that walked here last year
   S.wake = { start: 'a', nodes: {
     a: { s: 'nar', t: 'You wake in a narrow bed that smells of lamp oil and other people\'s bad decisions. The Lantern Society Lodge infirmary.', n: 'b' },
     b: { s: 'maud', t: '"Awake. Good. I\'m Warden Ferrow. You absorbed a raw essence in the middle of a bloom, which is either brave or stupid, and I don\'t care which, because both of them fill out the same paperwork."', o: [
-      { t: '"Is Jory all right?"', v: { ruthless: '"Did anyone else get an essence?"', sardonic: '"Is the paperwork all right?"' }, g: 'c' },
+      { t: '"Is Jory all right?"', v: { ruthless: '"Is Jory alive? Did anyone else get an essence?"', sardonic: '"Is Jory all right? Please tell me the paperwork survived too."' }, g: 'c' },
       { t: '"What happens now?"', g: 'c2' },
     ] },
     c: { s: 'maud', t: '"The lamplighter? Bruised and furious. He asked me to tell you that you still owe him a pie." She doesn\'t smile, exactly, but her moustache of soot moves. "Nobody else got one. You got lucky. Or the essence did."', n: 'c2' },
     c2: { s: 'maud', t: '"Now? Now every faction in Calderhal wants a look at you. Fresh Awakened are worth more than horses and cause fewer stable fires. Usually." She tosses you a brass lantern pin. "Lantern Society takes everyone. Hunt bloom-beasts, take contracts, get paid. Join, or don\'t."', o: [
       { t: 'Pin it on. "I\'m in."', v: { earnest: '"I\'m in. Someone has to deal with these things."', ruthless: '"What does it pay?" Pin it on.', charming: '"It goes with my eyes." Pin it on.' }, d: { flag: 'joined_lantern', standing: { lantern: 10 }, affinity: { maud: 5 } }, g: 'd' },
-      { t: '"I\'ll think about it." Pocket the pin.', d: { flag: 'lantern_considering', standing: { lantern: 2 } }, g: 'd' },
+      { t: '"I\'ll think about it." Pocket the pin.', d: { flag: 'lantern_considering', standing: { lantern: 2 } }, g: 'd_wait' },
     ] },
     d: { s: 'maud', t: '"Contracts are on the board. Ottoline at the Marrow Exchange will tell you what stones are, at length, and try to sell you some. Don\'t buy the first one she shows you."', n: 'e' },
+    d_wait: { s: 'maud', t: '"Keep the pin. No rush. You can explore Calderhal on your own, but the Society needs your name on the rolls before you take contracts." She points toward the market. "Ottoline at the Marrow Exchange can tell you about stones. At length. Don\'t buy the first one she shows you."', n: 'e' },
     e: { s: 'maud', t: '{tabooLine}', if: { taboo: true }, n: 'f', d: { suspicion: 10, quest: 's_confess' } },
     f: { s: 'hale', t: 'A thin man in Magisterium grey leans in the doorway. "Corwin Hale, Magisterium. Should you ever want your essence understood rather than merely used, the Annex is open. We have biscuits." He leaves before anyone can ask about the biscuits.', d: { stage: { main_bloom: 2 }, done: 'main_bloom', quest: 'main_lantern', quest2: 'main_iron', affinity: { hale: 2 } }, n: 'g' },
     g: { s: 'sys', t: '[Calderhal is open to you. Tap a location to visit it.]\n[Tip: The Drowned Lamp is where you rest, train abilities with cores, absorb new essences, and save.]', d: { goto: 'town' } },
@@ -141,7 +142,7 @@ at crunch like snow and hold the footprints of things that walked here last year
     ] },
     hollow: { s: 'maud', t: '"New Hollow, under the Bloomscar. Three Houses want the rights to it and the Society wants it shut before it starts spitting things into the city. Get down there before Caspian Varo does something heroic and stupid."', g: 'a', n: 'a' },
     rank: { s: 'maud', t: '"Four essences make a set, the set makes a confluence, and the confluence makes you Iron. Until then you\'re a Normal with tricks. After that it\'s Bronze, Silver, Gold, and you advance through focused mastery: seven chosen abilities across five essences, followed by a Magisterium trial. Train them by fighting things that could kill you, or by eating cores like a hungry raccoon. Cores are quicker. Cores also give you abilities that fold the first time something hits back. Fight with what you\'ve got and it\'ll hold. The Magisterium runs the trial." She sniffs. "They run it adequately."', n: 'a' },
-    her: { s: 'maud', t: '"I was Silver for twenty years. Then I got old and the Society made me a Warden, which is Silver for people who sit down." A pause. "Don\'t get old. Or do. Better than the alternative."', d: { trust: { maud: 3 } }, n: 'a' },
+    her: { s: 'maud', t: '"I was Silver for twenty years. Then I got old and the Society made me a Warden, which is Silver for people who sit down." A pause. "Don\'t get old. Or do. Better than the alternative."', d: { flag: 'maud_personal_conversation', trust: { maud: 3 } }, n: 'a' },
     track: { s: 'maud', t: 'She stops writing. "...Herding. Huh." She makes a note, underlines it twice. "Good eyes. I\'ll tell the Lampline patrol. That\'s worth a drink, which you\'ll buy yourself."', n: 'a' },
   } };
 
@@ -222,7 +223,9 @@ at crunch like snow and hold the footprints of things that walked here last year
   S.hale = { start: 'a', nodes: {
     a: { s: 'hale', t: '"Ah. Biscuit?" Hale offers a tin. The biscuits are slightly singed. "How may the Magisterium illuminate you today?"', o: [
       { t: 'Take the Mirror Trial for Bronze.', if: { trialReady: true, rank: 0 }, g: 'trial' },
-      { t: 'Ask what\'s needed for Bronze.', g: 'need' },
+      { t: 'Ask what\'s needed for Bronze.', if: { rank: 0 }, g: 'need' },
+      { t: 'Ask what\'s needed for Silver.', if: { rank: 1 }, g: 'need_silver' },
+      { t: 'Ask what\'s needed for Gold.', if: { rank: 2 }, g: 'need_gold' },
       { t: 'Ask about removing an essence or stone.', g: 'surgery' },
       { t: 'Ask about confluence.', g: 'conf' },
       { t: 'Ask about training with cores.', g: 'cores' },
@@ -231,6 +234,8 @@ at crunch like snow and hold the footprints of things that walked here last year
       { t: 'Take a biscuit and go.', g: 'end' },
     ] },
     need: { s: 'hale', t: '"First, a full set: four essences and the confluence they make. That is what Iron is. Then commit to a focused discipline: master seven chosen abilities, at least one from every essence, to eighty percent or more with little unseasoned growth. Then you face the Mirror Trial: yourself, as your essence understands you. Defeat it and your abilities break through. All of them, at once. It\'s quite something. People often cry. Some of them are the examiner."', n: 'a' },
+    need_silver: { s: 'hale', t: '"Silver takes another mastery portfolio: seven abilities matured to eighty percent, with every one of your five essences represented. Then the Trial of the Unmaking. Unlike the Mirror Trial, the light does not simply show you who you are. It asks which parts of you will endure." He offers a biscuit. "I recommend enduring."' , n: 'a' },
+    need_gold: { s: 'hale', t: '"Gold is not something you can claim by grinding through lessons. There is a last engine beyond Calderhal, in the Thornwake March. Still it, then bring seven mature disciplines from all five essences to the Gold Reflection here in the Annex." He lowers his voice. "I rather hope you survive both."', n: 'a' },
     surgery: { s: 'hale', t: '"Extraction." He sets the biscuit down, which is how you know he\'s serious. "Possible. Not pleasant. A stone can be cut out; the ability dies and the stone with it, and the essence around it forgets some of what it learned. An essence can be torn out entirely, which scars you for life and takes its confluence with it. We do it properly here. In the Undercroft they do it cheaply, which is a different word for the same knife."', n: 'a' },
     cores: { s: 'hale', t: '"Cores are essence in a jar. Feed one to an ability and it grows, quite genuinely. What it doesn\'t get is experience. An ability grown on cores is a sword nobody has swung: correct, sharp, and liable to turn in your hand." He taps the table. "Use it in earnest and the growth settles. Breakthrough on unseasoned growth and you carry the hollowness up a rank with you. We see it in the trials constantly. Nobody listens."', n: 'a' },
     conf: { s: 'hale', t: '"Absorb a fourth essence and the four of them react, producing a fifth: the confluence. Which one depends on what the first four have in common. Fire and Earth and Iron tend to forge something metallic, and so on." He sips tea. "It\'s permanent. Choose your four with care, or at least with style."', n: 'a' },
@@ -260,7 +265,7 @@ at crunch like snow and hold the footprints of things that walked here last year
       { t: 'Report the Hollow\'s heart is broken.', if: { flag: 'matriarch_dead', not: 'council_done' }, g: 'vote' },
       { t: 'Leave.', g: 'end' },
     ] },
-    sera: { s: 'seraphine', t: '"House Ithric wants the Regency because someone sensible should have it. The alternative is a Varo, and Varos think a ledger is a kind of boat." She tilts her head. "Help me and you will find the law very generous."', d: { affinity: { seraphine: 1 } }, n: 'a' },
+    sera: { s: 'seraphine', t: '"House Ithric wants the Regency because someone sensible should have it. The alternative is a Varo, and Varos think a ledger is a kind of boat." She tilts her head. "Help me and you will find the law very generous."', d: { flag: 'seraphine_regency_conversation', affinity: { seraphine: 1 } }, n: 'a' },
     petra: { s: 'petra', t: '"Everyone in this city owes somebody. I\'d like it to be me." Petra adjusts a ring. "Bring me something from that Hollow, Lampwick. Something real."', n: 'a' },
     ledger: { s: 'seraphine', t: 'Seraphine reads the ledger twice, very slowly. "Varo knew the bloom was coming. They let Lampwick burn." She closes it. "This ends their claim on the Hollow, and probably on the docks. House Ithric will not forget who brought it."', d: { take: 'ledger', standing: { ithric: 20, varo: -25 }, affinity: { seraphine: 10 }, flag: 'ledger_resolved', flag2: 'ledger_ithric', stage: { s_ledger: 1 }, done: 's_ledger' }, n: 'a' },
     vote: { s: 'nar', t: 'The Council convenes on the steps. You hold a Heart-Shard of the Glasswater Hollow, still faintly singing. The seats wait for you to speak.', n: 'vote2' },
@@ -283,7 +288,7 @@ at crunch like snow and hold the footprints of things that walked here last year
   S.ev_peddler = { start: 'a', nodes: {
     a: { s: 'nar', t: 'A peddler with a cart full of pots and suspiciously cheap draughts waves from the roadside. "Healing draughts, two for twenty! Mostly water! The rest is healing!"', o: [
       { t: 'Buy two (20 marks).', if: { marks: 20 }, d: { marks: -20, items: { draught: 2 } }, g: 'end' },
-      { t: '[Appraise] Check the draughts first.', if: { social: 'Appraise' }, g: 'ap' },
+      { t: '[Appraise] Inspect and buy three genuine draughts (20 marks).', if: { social: 'Appraise', marks: 20 }, g: 'ap' },
       { t: 'Keep walking.', g: 'end' },
     ] },
     ap: { s: 'nar', t: 'You sniff one. It is, against all odds, a genuine draught. The peddler, impressed that anyone checked, throws in a third.', d: { marks: -20, items: { draught: 3 } } },
@@ -358,10 +363,11 @@ at crunch like snow and hold the footprints of things that walked here last year
     a: { s: 'caspian', t: 'Caspian Varo sits on a shard of glass, nursing a burnt arm, two House guards unconscious behind him. "Don\'t," he says. "Don\'t say anything. The knight was harder than it looked."', o: [
       { t: 'Offer him a draught.', if: { items: { draught: 1 } }, d: { items: { draught: -1 }, affinity: { caspian: 10 }, trust: { caspian: 8 }, flag: 'caspian_helped' }, g: 'help' },
       { t: '"Go home, Caspian."', v: { sardonic: '"Go home, Caspian. Excellence is tiring."', ruthless: '"Go home. You\'re in my way."' }, d: { affinity: { caspian: -3 } }, g: 'home' },
-      { t: '"Come with me. Two Irons are better than one."', if: { flag: 'beat_caspian' }, d: { affinity: { caspian: 8 }, flag: 'caspian_helped' }, g: 'help' },
+      { t: '"Come with me. Two Irons are better than one."', if: { flag: 'beat_caspian' }, d: { affinity: { caspian: 8 }, flag: 'caspian_helped' }, g: 'help_offer' },
     ] },
     help: { s: 'caspian', t: 'He stares, then takes it. "...Thank you." He stands, wobbles, recovers his dignity. "I\'ll see my people out. The heart is through there. If you die, I\'ll tell everyone you were magnificent. If you live, I\'ll tell them I helped."', d: { stage: { main_glass: 3 } } },
     home: { s: 'caspian', t: '"Fine." He hauls his guards up by their collars. "The heart is through there. Try not to embarrass House Varo by dying in its Hollow." He limps away with as much grandeur as a limp allows.', d: { stage: { main_glass: 3 } } },
+    help_offer: { s: 'caspian', t: 'For once Caspian looks genuinely tempted. Then he glances at his unconscious guards. "I owe them a way home first. The heart is through there. You go ahead, and I shall try to arrive in one piece." He offers you a hand, with no flames at all.', d: { stage: { main_glass: 3 } } },
   } };
   S.matriarch_after = { start: 'a', nodes: {
     a: { s: 'nar', t: 'The Glass Matriarch falls apart like a cathedral window in slow motion. Every piece sings a different note. Then the Hollow is silent, and much, much darker.\n\nIn the rubble: a shard of the heart, still faintly warm.', d: { item: 'shard', flag: 'matriarch_dead', stage: { main_glass: 4 } }, n: 'b' },
@@ -415,7 +421,7 @@ at crunch like snow and hold the footprints of things that walked here last year
       { t: '"What are you going to do about it?"', v: { ruthless: '"Feeling bad is free. What are you going to do?"' }, d: { trust: { caspian: 4 } }, g: 'b' },
       { t: 'Sit down next to him and say nothing.', d: { affinity: { caspian: 8 }, trust: { caspian: 4 } }, g: 'b' },
     ] },
-    b: { s: 'caspian', t: 'He finally looks at you. "I want to find the people who sold my family that storm and I want to see their faces when I do. And I don\'t want to do it alone, because the last time I did something alone I ended up sitting on a rock in a Hollow being rescued by you."', o: [
+    b: { s: 'caspian', t: 'He finally looks at you. "I want to find the people who sold my family that storm and I want to see their faces when I do. And I don\'t want to do it alone, because the last time I trusted my sword and my name to solve a problem, I made a spectacle of myself instead of helping anyone."', o: [
       { t: '"Come with me. Bring your sword."', d: { party: 'caspian', flag: 'caspian_ally', stage: { s_varo: 1 }, done: 's_varo' }, g: 'yes' },
       { t: '"Not yet. Get your house in order first."', d: { stage: { s_varo: 1 }, done: 's_varo', standing: { varo: 5 } }, g: 'no' },
     ] },
@@ -426,21 +432,22 @@ at crunch like snow and hold the footprints of things that walked here last year
   // ---------------- SALTGRAVE ----------------
   S.landing_first = { start: 'a', nodes: {
     a: { s: 'nar', t: 'Gannet\'s Landing stands on stilts above the mud, sixty houses tied together with rope bridges and stubbornness. Everyone you pass is coughing. Their breath leaves a white dust on their lips.', n: 'b' },
-    b: { s: 'tarn', t: 'A broad woman with a fish-knife on her belt blocks the bridge. "Reeve Tarn. You\'re Lantern Society, or you\'re lost, or you\'re one of them ash-faced lot come back for more." She looks at your pin. "Society. Good. We\'ve a sickness, a lighthouse that\'s lit when it shouldn\'t be, and wreckers bold enough to rob the dead."', o: [
+    b: { s: 'tarn', t: 'A broad woman with a fish-knife on her belt blocks the bridge. "Reeve Tarn. You\'re Lantern Society, or you\'re lost, or you\'re one of them ash-faced lot come back for more." She looks at your lantern pin. "Society member or not, I\'ll take anyone willing to help. We\'ve a sickness, a lighthouse that\'s lit when it shouldn\'t be, and wreckers bold enough to rob the dead."', o: [
       { t: '"Tell me about the lighthouse."', g: 'light' },
       { t: '"What sickness?"', g: 'sick' },
     ] },
     light: { s: 'tarn', t: '"Saint Ivo\'s. Dark for ten years. A month ago it lit up, and a man with burned arms started coming down for supplies, paying in old Choir silver. He brought a woman with him once. Chained. Old. She looked at me like she wanted me to remember her face." Tarn spits over the rail. "I did."', d: { stage: { act2_embers: 3 } }, n: 'sick' },
-    sick: { s: 'tarn', t: '"Salt-lung. Started when the ash came down out of the marsh. Children first. The Choir won\'t come out this far, the Velvet Hand will sell us medicine at prices we can\'t pay, and the Magisterium sent a man who took notes and left." She looks at you hard. "You\'re the first one who asked."', d: { quest: 's_landing', flag: 'met_tarn', affinity: { tarn: 3 } } },
+    sick: { s: 'tarn', t: '"Salt-lung. Started when the ash came down out of the marsh. Children first. The Choir won\'t come out this far, the Velvet Hand will sell us medicine at prices we can\'t pay, and the Magisterium sent a man who took notes and left." She looks at you hard. "You\'re the first one who asked."', d: { quest: 's_landing', flag: 'met_tarn', affinity: { tarn: 3 }, stage: { act2_embers: 3 } } },
   } };
 
   S.landing = { start: 'a', nodes: {
     a: { s: 'tarn', t: '"Still breathing? Good. Out here that counts as luck."', o: [
       { t: 'About the salt-lung...', if: { quest: { s_landing: 0 } }, g: 'help' },
+      { t: 'Tell Tarn the ash source has been stopped.', if: { flag: 'prior_dead', quest: { s_landing: 0 } }, g: 'source_done' },
       { t: 'Buy supplies from the village (draughts, elixirs).', g: 'shop' },
       { t: 'Rest in the net-loft (free, full heal).', d: { heal: true }, g: 'rest' },
       { t: 'Ask about the Cinder Cloister.', if: { flag: 'knows_cloister' }, g: 'cloister' },
-      { t: 'Ask about Mother Gannet.', if: { flag: 'gannet_landing' }, g: 'gannet' },
+      { t: 'Ask about Mother Gannet.', if: { flag: 'gannet_landing', not: 'gannet_ally' }, g: 'gannet' },
       { t: 'Leave.', g: 'end' },
     ] },
     shop: { s: 'tarn', t: '"Elixirs are thirty a bottle, draughts are fifteen, and if you haggle I\'ll charge you forty."', d: { shop: 'landing' } },
@@ -452,17 +459,18 @@ at crunch like snow and hold the footprints of things that walked here last year
       { t: 'Pay the Velvet Hand for medicine (200 marks).', if: { marks: 200 }, d: { marks: -200, standing: { velvet: 10 }, affinity: { tarn: 10 }, flag: 'landing_velvet', stage: { s_landing: 1 }, done: 's_landing' }, g: 'velvet' },
       { t: 'Let the Magisterium study it properly, and treat it.', if: { standing: { magisterium: 15 } }, d: { standing: { magisterium: 12 }, affinity: { tarn: 4, hale: 4 }, flag: 'landing_mag', stage: { s_landing: 1 }, done: 's_landing' }, g: 'mag' },
       { t: '[Medicine] Treat them yourself. It\'s ash in the lungs; you can work with that.', if: { social: 'Medicine' }, d: { affinity: { tarn: 15 }, standing: { lantern: 6 }, flag: 'landing_self', stage: { s_landing: 1 }, done: 's_landing', bcores: 1 }, g: 'self' },
-      { t: '"Stop the ash at its source. I\'m going after whoever\'s burning the marsh."', d: { flag: 'landing_source', affinity: { tarn: 4 } }, g: 'source' },
+      { t: '"Stop the ash at its source. I\'m going after whoever\'s burning the marsh."', if: { not: 'prior_dead' }, g: 'source' },
     ] },
     choir: { s: 'tarn', t: 'Anselm comes himself, with six brothers and a cart of linen. He doesn\'t ask what anyone in the Landing has done or believes. Tarn watches him for an hour and then, without a word, starts carrying water for him.' },
     velvet: { s: 'tarn', t: 'The medicine arrives in crates marked FISH, delivered by people who don\'t give names. It works. Tarn counts the bottles twice and then shakes your hand like she\'s trying to remember it.' },
     mag: { s: 'tarn', t: 'Hale arrives with four junior Magisters and a portable laboratory. They are insufferable and thorough. The salt-lung turns out to be ash-spores. By the end of the week, the children stop coughing. Hale writes a paper about it. Tarn uses it to light her stove.' },
     self: { s: 'nar', t: 'You work through two nights. It\'s slow, ugly work, ash out of lungs one breath at a time. On the second morning a little boy laughs without coughing, and the whole village hears it.\n\nTarn presses a Bronze core into your hand. "My husband\'s. From his hunting days. He\'d want it used."' },
-    source: { s: 'tarn', t: '"Talk\'s cheap." She studies you. "But you\'ve got the look of someone who doesn\'t talk much for nothing. Fine. Come back when it\'s done. We\'ll still be here. Most of us."' },
+    source: { s: 'tarn', t: '"Talk\'s cheap." She studies you. "But you\'ve got the look of someone who doesn\'t talk much for nothing. Fine. Come back when it\'s done. We\'ll still be here. Most of us."', d: { flag: 'landing_source', affinity: { tarn: 4 } } },
+    source_done: { s: 'tarn', t: 'Tarn hears what happened at the Cinder Cloister without interrupting. Then she looks toward the marsh. "No more ash falling on our roofs. That does not mend every lung, but it means we finally have a chance to heal." She takes your hand. "You said you would stop it. You did. The Landing will remember."', d: { flag: 'landing_source_resolved', stage: { s_landing: 1 }, done: 's_landing', affinity: { tarn: 12 }, trust: { tarn: 8 }, standing: { lantern: 6 } } },
   } };
 
   S.lighthouse = { start: 'a', nodes: {
-    a: { s: 'nar', t: 'Saint Ivo\'s Light. The stairs are slick with ash. At the top, the great lamp burns with a fire that throws no warmth, and under it an old woman sits chained to the floor, staring out at the sea like she can see the weather coming from a hundred miles away.\n\nShe probably can.', n: 'b' },
+    a: { s: 'nar', t: 'Saint Ivo\'s Light. The stairs are slick with ash. High above, the great lamp burns with a fire that throws no warmth. Beneath it you can make out an old woman chained to the floor, staring out at the sea like she can see the weather coming from a hundred miles away.\n\nShe probably can.', n: 'b' },
     b: { s: 'nar', t: 'You can hear him up there: a man praying in a voice like a fire catching.', o: [
       { t: 'Climb the stairs and face him.', d: { fight: 'cinder', win: 'c', lose: 'lost' } },
       { t: '[Traverse] Go up the outside of the tower and come in through the lamp room.', if: { social: 'Traverse' }, d: { flag: 'cinder_ambush', fight: 'cinder', win: 'c', lose: 'lost' } },
@@ -508,8 +516,8 @@ at crunch like snow and hold the footprints of things that walked here last year
     insight: { s: 'nar', t: 'He talks, fast, the way frightened people do. The Prior wears the seed at his throat in an ember-locket. Without it his fire is only fire. You free him with the others; he goes with them, and does not look back at the Cloister.' },
   } };
   S.ev_reliquary = { start: 'a', nodes: {
-    a: { s: 'nar', t: 'The reliquary is full of ash-bound books and old Choir silver. In a lead box, under a false bottom: letters. Payments for a bloom. Payments for the next. Each one sealed with the same coin-stamp: a balance scale over a single eye.\n\nYou have seen that stamp on rings. On a ring.', d: { item: 'letters', stage: { act2_traitor: 1 }, bcores: 1 }, o: [
-      { t: 'Take the letters.', g: 'end' },
+    a: { s: 'nar', t: 'The reliquary is full of ash-bound books and old Choir silver. In a lead box, under a false bottom: letters. Payments for a bloom. Payments for the next. Each one sealed with the same coin-stamp: a balance scale over a single eye.\n\nYou have seen that stamp on rings. On a ring. You pocket the letters before the damp can ruin them.', d: { item: 'letters', stage: { act2_traitor: 1 }, bcores: 1 }, o: [
+      { t: 'Leave with the letters.', g: 'end' },
       { t: '[Appraise] Check the seal against what you know.', if: { social: 'Appraise' }, g: 'ap' },
     ] },
     ap: { s: 'nar', t: 'The wax holds a thread of the sealer\'s essence. Coin, and something meaner under it. It matches the ring Councillor Petra Selenne turns when she talks about debts. You are certain. A court might want more; the Council will not.', d: { flag: 'petra_certain' } },
@@ -519,7 +527,7 @@ at crunch like snow and hold the footprints of things that walked here last year
       { t: 'Sit and listen.', g: 'listen' },
       { t: 'Attack him now.', v: { ruthless: 'Kick the table over and go for his throat.' }, g: 'attack' },
     ] },
-    listen: { s: 'prior', t: '"Calderhal is a city of seven chairs and ten thousand beggars. The Council trades in people the way the Exchange trades in cores. Nothing changes, because nothing has to. A bloom makes it have to." He sips. "Lampwick burned, and look: an orphan became you. The second bloom will make ten thousand of you."', o: [
+    listen: { s: 'prior', t: '"Calderhal is a city of seven chairs and ten thousand beggars. The Council trades in people the way the Exchange trades in cores. Nothing changes, because nothing has to. A bloom makes it have to." He sips. "Lampwick burned, and look: you rose from its ashes as an Awakened. The second bloom will make ten thousand more like you."', o: [
       { t: '"And kill ten thousand more."', v: { earnest: '"Jory. The baker. The families in the chapel. You don\'t get to call them a price."' }, g: 'refuse' },
       { t: '[Faith] "The dawn comes whether we deserve it or not. You were taught that. You forgot."', if: { social: 'Faith' }, d: { flag: 'prior_doubt' }, g: 'doubt' },
       { t: '[Persuade] "Your patron on the Council isn\'t buying a revolution. She\'s buying cores."', if: { flag: 'petra_certain' }, d: { flag: 'prior_doubt' }, g: 'doubt' },
@@ -573,7 +581,7 @@ at crunch like snow and hold the footprints of things that walked here last year
   // ---------------- ACT II FINALE ----------------
   S.act2_end = { start: 'a', nodes: {
     a: { s: 'nar', t: 'The Lodge, late. Maud has a bottle out, which happens twice a year. Tonight there are glasses for you, and for {companionName}, and one more that nobody touches, for Lampwick.', n: 'b' },
-    b: { s: 'maud', t: '"Silver, the Cloister, and a Councillor in chains or on the run," Maud says. "From a nobody who got lucky in a bakery crater." She raises her glass. "Never stop getting lucky."', n: 'c' },
+    b: { s: 'maud', t: '{act2MaudLine}', n: 'c' },
     c: { s: 'sys', t: '[Act II complete.]\n[The Ashen Circle is broken in Calderhal. Not everywhere: the Prior\'s letters mention other cloisters, other cities, other storms.]\n[Gold-rank is a long way off. You\'ve got time. Probably.]', d: { flag: 'act2_done' } },
   } };
 
@@ -1126,6 +1134,7 @@ at crunch like snow and hold the footprints of things that walked here last year
         case 'regentHand': return { lantern: 'You take the letters to Maud instead of the Council. The Society has never once trusted a Councillor and isn\'t starting now. By morning Petra has fled the city, and House Selenne\'s ships have Lantern guards on every gangplank.', ithric: 'Lady Seraphine reads the letters in the Regency chair you helped put her in. She doesn\'t smile. "Thank you. This will be done properly." It is: a trial, a verdict, Petra\'s seat stripped. Seraphine is now the most powerful person in Calderhal, and she remembers who made her so.', selenne: 'You gave House Selenne the Glasswater rights. Now you hand its head\'s confession to the clerks of the Regency. Petra is gone before the warrant is signed. The Hollow is confiscated. Selenne will never forgive you, which seems fair.', varo: 'Caspian takes the letters to his father and to the Council in the same afternoon. House Varo confesses its part in Lampwick alongside Selenne\'s, and the city doesn\'t know whether to cheer or riot. Caspian stands on the steps through all of it.', magisterium: 'Hale delivers the letters to the Council with a forty-page annotated appendix. Petra flees before anyone finishes reading it.' }[g.ending] || 'The Council takes the letters. Petra is gone by morning.';
         case 'ottoLine': return g.flags.petra_bribed ? 'Ottoline doesn\'t look at you when you come into the Exchange anymore. She serves you, politely, and counts your change twice.' : '"Petra," says Ottoline, the next day, when you come into the Exchange. She takes off her monocle. "I worked for that woman for nineteen years. I appraised the cores from Lampwick for her." She is quiet a while. "Every core you sell me from now on, I pay a fair price. A real one. I should have been doing that for years."';
         case 'companionName': return g.party ? W.ALLIES[g.party].name.split(' ').slice(-1)[0] : 'Jory, who came in out of the rain and refuses to leave';
+        case 'act2MaudLine': return g.flags.petra_bribed ? "\"Silver. The Cloister. And Petra Selenne still smiling,\" Maud says. Her eyes stay on yours. \"I do not know what happened on those steps, and tonight I am not asking.\" She lifts her glass, but does not toast." : g.flags.petra_exposed ? "\"Silver. The Cloister. And a councillor in chains,\" Maud says. \"From a nobody who got lucky in a bakery crater.\" She raises her glass. \"Never stop getting lucky.\"" : g.flags.petra_fled ? "\"Silver. The Cloister. And a councillor on the run,\" Maud says. \"From a nobody who got lucky in a bakery crater.\" She raises her glass. \"Never stop getting lucky.\"" : "\"Silver. The Cloister. And the Council forced to answer for Lampwick,\" Maud says. \"From a nobody who got lucky in a bakery crater.\" She raises her glass. \"Never stop getting lucky.\"";
         case 'lastChange': return (g.lastChange && g.lastChange.text) || '';
         default: return m;
       }
