@@ -19,7 +19,7 @@ Future game art should live in these locations and be referenced by relative pat
 - `assets/scenes/`
 - `assets/ui/`
 
-They currently contain placeholders, not portraits or illustrations. For example, `assets/npcs/maud.webp`.
+The initial 14-artwork pilot now supplies six NPC portraits, six enemy combat images, and two boss images. The game loads WebP files on demand using relative paths, such as `assets/npcs/maud.webp`. Missing images are hidden automatically.
 
 ## Existing saves
 Browser saves are origin-specific. Local saves from `file://` or other hosts will not automatically appear on GitHub Pages. **Export a save code from the earlier game and import it into this edition.**
